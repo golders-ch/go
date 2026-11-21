@@ -1,18 +1,18 @@
-interface ReservierungRepository {
-    + save(reservierung: Reservierung): void
-    + findById(id: String): Reservierung
-    + findByMitarbeiter(mitarbeiter: Mitarbeiter): List<Reservierung>
-    + findByAuto(auto: Auto): List<Reservierung>
+interface ReservationRepository {
+    + save(reservation: Reservation): void
+    + findById(id: String): Reservation
+    + findByEmployee(employee: Employee): List<Reservation>
+    + findByVehicle(vehicle: Vehicle): List<Reservation>
 }
 
-interface AutoRepository {
-    + save(auto: Auto): void
-    + findById(id: String): Auto
-    + findAll(): List<Auto>
-    + delete(auto: Auto): void
+interface VehicleRepository {
+    + save(vehicle: Vehicle): void
+    + findById(id: String): Vehicle
+    + findAll(): List<Vehicle>
+    + delete(vehicle: Vehicle): void
 }
 
-interface MitarbeiterRepository {
-    + findByEntraId(entraId: String): Mitarbeiter
-    + save(mitarbeiter: Mitarbeiter): void
+interface EmployeeRepository {
+    + findByEntraId(entraId: String): Employee
+    + save(employee: Employee): void
 }

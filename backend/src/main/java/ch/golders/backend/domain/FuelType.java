@@ -1,8 +1,8 @@
 package ch.golders.backend.domain;
 
-public enum Kraftstoff {
-    BENZIN,
+public enum FuelType {
+    PETROL,
     DIESEL,
-    ELEKTRO,
+    ELECTRIC,
     HYBRID
 }

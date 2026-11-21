@@ -1,67 +1,67 @@
-# Projektplan GO
+# GO Project Plan
 
-## Projektziel
+## Project Goal
 
-Firmeninternes Autovermietungs-System für Golders.ch. Mitarbeitende können
-Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
+Internal vehicle rental system for Golders.ch. Employees can find, reserve,
+pick up, and return company vehicles.
 
-- Semesterprojekt
-- Architektur: Power Apps Code App → Spring-Boot-API → Microsoft Dataverse
-- Die gesamte Geschäftslogik liegt im Spring-Boot-Backend
+- Semester project
+- Architecture: Power Apps Code App → Spring Boot API → Microsoft Dataverse
+- All business logic is handled by the Spring Boot backend
 
-## Aktueller Stand (2026-11-12)
+## Current Status (2026-11-12)
 
-- ✅ Projektstruktur initialisiert (Frontend, Backend, Docs)
-- ✅ Fachmodell definiert: `Auto`, `Mitarbeiter`, `Reservierung` (siehe `architecture.puml`)
+- ✅ Project structure initialized (frontend, backend, docs)
+- ✅ Domain model defined: `Vehicle`, `Employee`, `Reservation` (see `architecture.puml`)
 - ✅ Frontend-Template eingerichtet (React 19, Vite, Tailwind, shadcn/ui, Router, React Query)
 - ✅ Backend-Skeleton eingerichtet (Spring Boot, Java 21, Maven)
-- ✅ **Domänenmodell implementiert** (Commit `7a30e88`):
-  - Entities: `Auto`, `Mitarbeiter`, `Reservierung`
-  - Enums: `AutoStatus`, `Kraftstoff`, `Rolle`, `Reservierungsstatus`
-  - Package-Struktur: `ch.golders.backend.domain`
-  - Immutability durch `final`-Felder (ausser Status)
-- ✅ **Mitarbeiter-Entity verschlankt** (nur `entraID` + `rolle`, Personendaten aus Entra ID)
-- ✅ Repository-Interfaces entworfen (siehe `repositories.puml`)
-- ✅ Repository-Interfaces in Java implementiert (`domain`)
-- ✅ In-Memory-Implementierung der Repositories (`infrastructure`)
-- ✅ Backend-Starttest zum Laden des Spring-Kontexts vorhanden
-- 🔄 Reservierungsservice begonnen: Repository per Konstruktor, zeitlicher
-  Vergleich und Prüfung gegen vorhandene Reservierungen als private Methoden
-- ⬜ Reservierungen über den Service prüfen und speichern
-- ⬜ Fachliche Unit-Tests für die Geschäftslogik
+- ✅ **Domain model implemented** (commit `7a30e88`):
+  - Entities: `Vehicle`, `Employee`, `Reservation`
+  - Enums: `VehicleStatus`, `FuelType`, `Role`, `ReservationStatus`
+  - Package structure: `ch.golders.backend.domain`
+  - Immutability through `final` fields (except status)
+- ✅ **Employee entity simplified** (only `entraId` + `role`; personal data remains in Entra ID)
+- ✅ Repository interfaces designed (see `repositories.puml`)
+- ✅ Repository interfaces implemented in Java (`domain`)
+- ✅ In-memory repository implementations added (`infrastructure`)
+- ✅ Backend startup test for loading the Spring context added
+- 🔄 Reservation service started: repository injected through the constructor,
+  time comparison and checks against existing reservations as private methods
+- ⬜ Validate and save reservations through the service
+- ⬜ Business-logic unit tests
 - ⬜ REST API
-- ⬜ Dataverse-Anbindung
-- ⬜ Frontend zeigt noch Demo-Inhalt
+- ⬜ Dataverse integration
+- ⬜ Frontend still displays demo content
 
-## Nächste Schritte
+## Next Steps
 
-1. **Backend: Geschäftslogik** – Reservierungsservice:
-   - Reservierungszeiträume validieren: Start muss vor Ende liegen
-   - Überschneidungsprüfung mit dem Speichern verbinden
-   - Behandlung abgeschlossener Reservierungen festlegen
-   - Repository und Service für die Anwendung verdrahten
-   - Prüfung des Fahrzeugstatus
-   - Stornierung, Übernahme, Rückgabe
-   - erlaubte/unerlaubte Statuswechsel
-2. **Backend: Unit-Tests** für die Geschäftslogik
+1. **Backend: Business logic** – reservation service:
+   - Validate reservation periods: start must be before end
+   - Connect overlap checks with saving
+   - Decide how completed reservations are handled
+   - Wire the repository and service into the application
+   - Check vehicle status
+   - Cancellation, pickup, and return
+   - Allowed/disallowed status transitions
+2. **Backend: Unit tests** for business logic
 3. **Backend: REST API** + Swagger/OpenAPI
-4. **Dataverse-Anbindung** (Persistenz, OAuth via Entra ID)
-5. **Frontend: Fachliche Seiten** (Fahrzeugliste, Reservierung, etc.)
-6. **Deployment** auf Azure Container Apps
+4. **Dataverse integration** (persistence, OAuth via Entra ID)
+5. **Frontend: Business pages** (vehicle list, reservation, etc.)
+6. **Deployment** to Azure Container Apps
 
-## Mögliche Erweiterungen (Backlog)
+## Possible Enhancements (Backlog)
 
-- Vermietbarkeit pro Abteilung einschränken (Idee aus der Regelsammlung,
-  bewusst vorerst nicht umgesetzt – YAGNI)
+- Restrict vehicle rental by department (idea from the rules collection,
+  intentionally not implemented for now – YAGNI)
 
-## Meilensteine
+## Milestones
 
-| Meilenstein                       | Status                   |
-| --------------------------------- | ------------------------ |
-| Projektsetup + Fachmodell         | ✅ erreicht              |
-| Backend: Domänenmodell            | ✅ erreicht (2026-10-31) |
-| Backend: Geschäftslogik mit Tests | ⬜ offen                 |
-| Backend: REST API                 | ⬜ offen                 |
-| Dataverse-Anbindung               | ⬜ offen                 |
-| Frontend: Kernfunktionen          | ⬜ offen                 |
-| Deployment                        | ⬜ offen                 |
+| Milestone                          | Status                  |
+| ---------------------------------- | ----------------------- |
+| Project setup + domain model      | ✅ complete              |
+| Backend: domain model             | ✅ complete (2026-10-31) |
+| Backend: business logic with tests | ⬜ open                 |
+| Backend: REST API                 | ⬜ open                 |
+| Dataverse integration             | ⬜ open                 |
+| Frontend: core features           | ⬜ open                 |
+| Deployment                        | ⬜ open                 |

@@ -1,118 +1,121 @@
 # Architecture Decision Log
 
-## 2026-11-12 – Provisorische Reservierungen blockieren Zeiträume
+## 2026-11-12 – Provisional reservations block time periods
 
-**Entscheidung:** Provisorische Reservierungen blockieren den Zeitraum eines
-Fahrzeugs bereits. Abgesagte Reservierungen blockieren ihn nicht.
+**Decision:** Provisional reservations block a vehicle's time period. Cancelled
+reservations do not block it.
 
-**Kontext:** Bei der Überschneidungsprüfung soll der Status bestehender
-Reservierungen berücksichtigt werden.
+**Context:** The status of existing reservations must be considered when
+checking for overlaps.
 
-**Alternative:** Erst bestätigte Reservierungen blockieren den Zeitraum.
+**Alternative:** Only confirmed reservations block a time period.
 
-**Begründung:** Ein Fahrzeug soll während einer provisorischen Reservierung
-nicht gleichzeitig anderweitig reserviert werden können. Der Umgang mit
-abgeschlossenen Reservierungen ist noch offen; aktuell werden sie mitgeprüft.
+**Rationale:** A vehicle must not be reserved elsewhere while a provisional
+reservation exists. How completed reservations are handled is still open; they
+are currently included in the check.
 
-## 2026-11-12 – Direkt anschliessende Reservierungen erlauben
+## 2026-11-12 – Allow reservations that start immediately after another
 
-**Entscheidung:** Eine Reservierung darf genau dann beginnen, wenn die vorherige
-endet. Die Zeiträume gelten für die Überschneidungsprüfung als halb offen:
-Der Start gehört dazu, das Ende nicht.
+**Decision:** A reservation may start exactly when the previous one ends.
+Time periods are treated as half-open for overlap checks: the start is included,
+the end is excluded.
 
-**Kontext:** Die Verfügbarkeitsprüfung für Fahrzeuge wird im Reservierungsservice
-entwickelt. Der Umgang mit aneinandergrenzenden Zeiträumen muss eindeutig sein.
+**Context:** Vehicle availability checks are being developed in the reservation
+service. The handling of adjacent time periods must be unambiguous.
 
-**Alternative:** Zwischen Reservierungen eine Pause vorschreiben.
+**Alternative:** Require a break between reservations.
 
-**Begründung:** Fahrzeuge können ohne vorgeschriebene Pause direkt erneut
-reserviert werden. Eine allfällige Vorbereitungszeit ist damit nicht vorgesehen.
+**Rationale:** Vehicles can be reserved again immediately without a required
+break. Any preparation time is therefore not included.
 
-## 2026-11-09 – Verfügbarkeitsprüfung im Service, nicht im Repository
+## 2026-11-09 – Availability checks belong in the service, not the repository
 
-**Entscheidung:** Die Prüfung, ob ein Auto in einem Zeitraum verfügbar ist
-(`checkAvailability`), wird **nicht** Teil des `ReservierungRepository`-Interfaces,
-sondern Geschäftslogik im `ReservierungService` (Package `application`).
+**Decision:** The check for whether a vehicle is available during a time period
+(`checkAvailability`) is **not** part of the `ReservationRepository` interface;
+it is business logic in `ReservationService` (package `application`).
 
-**Kontext:** Beim Entwurf der Repository-Interfaces (`repositories.puml`) stand
-`checkAvailability` zunächst im Repository. Repositories sollen aber nur
-Persistenz-Operationen kapseln (laden/speichern), keine Fachlogik.
+**Context:** During the design of the repository interfaces (`repositories.puml`),
+`checkAvailability` was initially placed in the repository. Repositories should
+only encapsulate persistence operations (loading/saving), not business logic.
 
-**Alternativen:** `checkAvailability` im Repository belassen (vermischt Persistenz
-mit Geschäftslogik); dedizierte Query-Methode `findOverlapping(...)` im Repository
-(später bei Dataverse evtl. sinnvoll, vorerst YAGNI).
+**Alternatives:** Keep `checkAvailability` in the repository (mixes persistence
+with business logic); add a dedicated query method such as
+`findOverlapping(...)` to the repository (could be useful with Dataverse later,
+but YAGNI for now).
 
-**Begründung:** Der Service holt sich via `findByAuto(auto)` die Reservierungen
-und prüft Überschneidungen selbst. So bleibt die Regel an einem Ort, ist ohne
-Datenbank testbar und das Repository-Interface bleibt schlank. Bei späterem
-Performance-Bedarf kann eine Query-Methode ergänzt werden, ohne die Regel zu
-duplizieren.
+**Rationale:** The service retrieves reservations with `findByVehicle(vehicle)`
+and checks for overlaps itself. This keeps the rule in one place, makes it
+testable without a database, and keeps the repository interface small. A query
+method can be added later if performance requires it, without duplicating the
+rule.
 
-## 2026-11-09 – Mitarbeiter-Entity minimal halten (entraID + rolle)
+## 2026-11-09 – Keep the employee entity minimal (entraId + role)
 
-**Entscheidung:** `Mitarbeiter` enthält nur `entraID` und `rolle`. Personendaten
-(Name, Vorname, Geburtsdatum, Abteilung etc.) werden im Backend nicht gespeichert.
+**Decision:** `Employee` contains only `entraId` and `role`. Personal data
+(first name, last name, date of birth, department, etc.) is not stored in the
+backend.
 
-**Kontext:** Die Identitäts- und Personendaten werden bereits in Microsoft Entra ID
-gepflegt. Eine Duplikation im Backend müsste synchronisiert werden und würde
-personenbezogene Daten unnötig an einem weiteren Ort speichern.
+**Context:** Identity and personal data are already maintained in Microsoft
+Entra ID. Duplicating them in the backend would require synchronization and
+would unnecessarily store personal data in another location.
 
-**Alternativen:** Vollständiges Mitarbeiter-Profil im Backend (mit Sync-Problem);
-teilweises Profil (nur Anzeigename) – beides verworfen.
+**Alternatives:** A complete employee profile in the backend (with
+synchronization issues); a partial profile (display name only) – both rejected.
 
-**Begründung:** Single Source of Truth (Entra ID), Datenminimierung (DSG),
-weniger Code. Das Backend braucht die Entra ID zur Authentifizierung und die
-Rolle zur Autorisierung – mehr nicht.
+**Rationale:** Single source of truth (Entra ID), data minimization, and less
+code. The backend needs the Entra ID for authentication and the role for
+authorization – nothing more.
 
-## 2026-10-31 – Package-Struktur: Clean Architecture (leichtgewichtig)
+## 2026-10-31 – Lightweight Clean Architecture package structure
 
-**Entscheidung:** Das Backend wird in vier Packages gegliedert:
-`domain` (Entities, Enums, Repository-Interfaces), `application` (Services/Geschäftslogik),
-`infrastructure` (In-Memory-Repos, später Dataverse), `api` (REST-Controller).
+**Decision:** The backend is divided into four packages:
+`domain` (entities, enums, repository interfaces), `application` (services and
+business logic), `infrastructure` (in-memory repositories, later Dataverse),
+and `api` (REST controllers).
 
-**Kontext:** Die Persistenz (Dataverse) kommt erst später, die Geschäftslogik soll aber
-jetzt schon implementiert und getestet werden.
+**Context:** Dataverse persistence will be added later, but business logic
+should be implemented and tested now.
 
-**Alternativen:** Flache Struktur (alles in einem Package); klassische
-Controller-Service-Repository-Schicht ohne explizites Domain-Package.
+**Alternatives:** A flat structure (everything in one package); a conventional
+controller-service-repository structure without an explicit domain package.
 
-**Begründung:** Abhängigkeiten zeigen nach innen Richtung `domain`. Beim späteren
-Wechsel auf Dataverse wird nur `infrastructure` ersetzt – Geschäftslogik und API
-bleiben unberührt. Gleichzeitig bleibt die Struktur für ein Semesterprojekt
-überschaubar.
+**Rationale:** Dependencies point inward toward `domain`. When switching to
+Dataverse later, only `infrastructure` will be replaced; business logic and the
+API remain unchanged. The structure also stays manageable for a semester
+project.
 
-## 2026-10-31 – Reservierungsstatus um AKTIV und ABGESCHLOSSEN erweitert
+## 2026-10-31 – Add ACTIVE and COMPLETED reservation statuses
 
-**Entscheidung:** Der Status einer Reservierung wird um `AKTIV` und `ABGESCHLOSSEN`
-erweitert. Lebenszyklus: `PROVISORISCH → BESTAETIGT → AKTIV → ABGESCHLOSSEN`,
-jederzeit (vor Übernahme) `ABGESAGT` möglich.
+**Decision:** Add `ACTIVE` and `COMPLETED` to the reservation statuses.
+Lifecycle: `PROVISIONAL → CONFIRMED → ACTIVE → COMPLETED`, with `CANCELLED`
+possible at any time before pickup.
 
-**Kontext:** Die README verlangt Geschäftslogik für Fahrzeugübernahme und -rückgabe.
-Das ursprüngliche Modell (`PROVISORISCH`, `BESTAETIGT`, `ABGESAGT`) konnte das nicht
-abbilden.
+**Context:** The README requires business logic for vehicle pickup and return.
+The original model (`PROVISIONAL`, `CONFIRMED`, `CANCELLED`) could not represent
+these operations.
 
-**Alternativen:** Übernahme nur über den Auto-Status (`VERMIETET`) abbilden;
-Übernahme/Rückgabe vorerst weglassen.
+**Alternatives:** Represent pickup only through the vehicle status (`RENTED`);
+omit pickup and return for now.
 
-**Begründung:** Ein expliziter Lebenszyklus macht die erlaubten Statuswechsel
-klar definiert und gut testbar – genau darauf liegt der Schwerpunkt der
-Backend-Tests laut README.
+**Rationale:** An explicit lifecycle makes the allowed status transitions
+clearly defined and easy to test – the exact focus of the backend tests
+described in the README.
 
-## 2026-11-01 – Reservierungszeiträume zeitpunktgenau (LocalDateTime)
+## 2026-11-01 – Use LocalDateTime for reservation periods
 
-**Entscheidung:** `startdatum`/`enddatum` in `Reservierung` werden von `LocalDate`
-auf `LocalDateTime` umgestellt und zu `startzeitpunkt`/`endzeitpunkt` umbenannt.
+**Decision:** Change `startDate`/`endDate` in `Reservation` from `LocalDate` to
+`LocalDateTime` and rename them to `startDateTime`/`endDateTime`.
 
-**Kontext:** Fachlicher Use Case: Mitarbeitende brauchen Fahrzeuge auch nur
-stundenweise (z.B. Kundenbesuch am Morgen). Zum aktuellen Zeitpunkt existiert
-weder Persistenz noch API oder Frontend – die Änderung ist jetzt nahezu kostenlos,
-später wäre sie teuer.
+**Context:** Employees need vehicles for only a few hours in some use cases
+(for example, a morning customer visit). At this point, there is no persistence,
+API, or frontend, so this change is nearly free now and would be expensive
+later.
 
-**Alternativen:** Tag-basierte Reservierung mit `LocalDate` (einfacher, aber keine
-halbtägigen Buchungen möglich); `Instant`/`ZonedDateTime` (Zeitzonen-Support –
-Overkill für eine einstandortige Schweizer Firma).
+**Alternatives:** Day-based reservations with `LocalDate` (simpler, but no
+half-day bookings); `Instant`/`ZonedDateTime` (time zone support – overkill for
+a single-location Swiss company).
 
-**Begründung:** Die Überschneidungslogik ist strukturell identisch für beide Typen;
-der Mehraufwand liegt nur in Frontend-Eingabe und Tests. Der fachliche Nutzen
-rechtfertigt das. `LocalDateTime` bildet einen Zeitraum als lokale Uhrzeit ohne
-Zeitzonen-Komplexität korrekt ab.
+**Rationale:** The overlap logic is structurally identical for both types; the
+additional work is limited to frontend input and tests. The business value
+justifies it. `LocalDateTime` correctly represents a time period as local time
+without time zone complexity.

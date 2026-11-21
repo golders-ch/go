@@ -1,20 +1,20 @@
 # GO
 
-**GO** ist ein firmeninternes Autovermietungs-System für Golders.ch. Mitarbeitende können Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
+**GO** is an internal vehicle rental system for Golders.ch. Employees can find, reserve, pick up, and return company vehicles.
 
-## Architektur
+## Architecture
 
 ```text
 Power Apps Code App
         ↓
-Spring-Boot-API
+Spring Boot API
         ↓
 Microsoft Dataverse
 ```
 
-Die gesamte Geschäftslogik liegt im Spring-Boot-Backend. Das Frontend greift nicht direkt auf Dataverse zu.
+All business logic is handled by the Spring Boot backend. The frontend does not access Dataverse directly.
 
-## Technologien
+## Technologies
 
 ### Frontend
 
@@ -22,7 +22,7 @@ Die gesamte Geschäftslogik liegt im Spring-Boot-Backend. Das Frontend greift ni
 - React
 - TypeScript
 - Vite
-- Node.js und npm
+- Node.js and npm
 
 ### Backend
 
@@ -32,162 +32,164 @@ Die gesamte Geschäftslogik liegt im Spring-Boot-Backend. Das Frontend greift ni
 - REST API
 - Swagger / OpenAPI
 
-### Plattform
+### Platform
 
 - Azure Container Apps
 - Microsoft Dataverse
 - Microsoft Entra ID
 - GitHub
 
-## Projektstruktur
+## Project Structure
 
 ```text
 golders-go/
 ├── frontend/ # React / Power Apps Code App
 ├── backend/ # Java / Spring Boot / Maven
-├── docs/ # Technische Dokumentation
+├── docs/ # Technical documentation
 ├──.gitignore
 └── README.md
 ```
 
-## Voraussetzungen
+## Prerequisites
 
-Für die lokale Entwicklung werden folgende Werkzeuge benötigt:
+The following tools are required for local development:
 
 - Git
 - Visual Studio Code
 - Java 21
-- Node.js als LTS-Version
+- Node.js (LTS version)
 - npm
 - Power Apps CLI
-- Zugriff auf eine Power-Platform-Entwicklungsumgebung
+- Access to a Power Platform development environment
 
-## Installation
+## Setup
 
-### Repository klonen
+### Clone the repository
 
 ```powershell
 git clone <REPOSITORY-URL>
 cd golders-go
 ```
 
-### Backend installieren und starten
+### Install and start the backend
 
-Das Backend verwendet den im Repository enthaltenen Maven Wrapper. Eine separate Maven-Installation ist deshalb normalerweise nicht erforderlich.
+The backend uses the Maven Wrapper included in the repository. A separate Maven installation is therefore usually not required.
 
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-Das Backend läuft standardmäßig unter:
+The backend runs at the following address by default:
 
 ```text
 http://localhost:8080
 ```
 
-### Frontend installieren
+### Install the frontend
 
 ```powershell
 cd frontend
 npm install
 ```
 
-Die Power-Apps-Werkzeuge müssen nur einmal pro Computer global installiert werden:
+The Power Apps tools only need to be installed globally once per computer:
 
 ```powershell
 npm install --global @microsoft/power-apps-cli
 npm install --global @microsoft/power-apps
 ```
 
-Wenn dieser Befehl bereits eine Version ausgibt, können die beiden Installationsbefehle übersprungen werden:
+If this command already outputs a version, you can skip the two installation commands:
 
 ```powershell
 pa --version
 ```
 
-### Power Apps Code App initialisieren
+### Initialize the Power Apps Code App
 
-Dieser Schritt ist nur erforderlich, wenn das Projekt noch nicht mit einer Power-Platform-Umgebung verbunden wurde.
+This step is only required if the project has not yet been connected to a Power Platform environment.
 
 ```powershell
 pa app init --display-name "GO" --environment-id <ENVIRONMENT-ID>
 ```
 
-### Frontend starten
+### Start the frontend
 
 ```powershell
 pa app run
 ```
 
-Anschließend die ausgegebene **Local Play**-Adresse im selben Browserprofil öffnen, das für die Anmeldung bei Power Apps verwendet wird.
+Then open the displayed **Local Play** address in the same browser profile used to sign in to Power Apps.
 
 ## Tests
 
-### Backend-Tests ausführen
+### Run backend tests
 
 ```powershell
 cd backend
 .\mvnw.cmd test
 ```
 
-Die Unit-Tests befinden sich unter:
+The unit tests are located in:
 
 ```text
 backend/src/test/
 ```
 
-Der Schwerpunkt der Tests liegt auf der Geschäftslogik, insbesondere auf:
+The tests focus on business logic, especially:
 
-- Prüfung von Reservierungszeiträumen
-- Verhinderung überschneidender Reservierungen
-- Prüfung des Fahrzeugstatus
-- Stornierung von Reservierungen
-- Fahrzeugübernahme und Rückgabe
-- erlaubten und unerlaubten Statuswechseln
+- Validating reservation time periods
+- Preventing overlapping reservations
+- Checking vehicle status
+- Cancelling reservations
+- Vehicle pickup and return
+- Allowed and disallowed status transitions
 
-### Frontend-Tests
+### Frontend tests
 
-Frontend-Tests werden später mit Vitest und React Testing Library ergänzt, sobald die ersten fachlichen Komponenten und Benutzerabläufe umgesetzt sind.
+Frontend tests will be added later with Vitest and React Testing Library once the first business components and user flows have been implemented.
 
-## Konfiguration
+## Configuration
 
-Lokale Zugangsdaten und Geheimnisse dürfen nicht ins Git-Repository eingecheckt werden.
+Local credentials and secrets must not be checked into the Git repository.
 
-Dazu gehören insbesondere:
+These include:
 
-- Dataverse-URL
-- Microsoft-Entra-Tenant-ID
-- Client-ID
+- Dataverse URL
+- Microsoft Entra tenant ID
+- Client ID
 - Client Secret
-- lokale API-Adressen
-- persönliche Zugangstokens
+- Local API URLs
+- Personal access tokens
 
-Für benötigte Variablen sollen Dateien wie `.env.example` oder Beispielkonfigurationen mit leeren Platzhaltern verwendet werden.
+Use files such as `.env.example` or sample configurations with empty placeholders for required variables.
 
-## Dokumentation
+## Documentation
 
-Die technische Dokumentation befindet sich im Ordner `docs/`.
+The technical documentation is located in the `docs/` directory.
 
-Geplante Inhalte:
+Planned content:
 
-- `architecture.md` – Softwarearchitektur
-- `setup-guide.md` – Installations- und Einrichtungsanleitung
-- `technologies.md` – verwendete Technologien
-- Swagger UI – Dokumentation der REST API
+- `architecture.md` – software architecture
+- `setup-guide.md` – installation and setup guide
+- `technologies.md` – technologies used
+- Swagger UI – REST API documentation
 
 ## Deployment
 
-Das Spring-Boot-Backend wird später in **Azure Container Apps** bereitgestellt. Das Frontend wird als **Power Apps Code App** veröffentlicht.
+The Spring Boot backend will later be deployed to **Azure Container Apps**. The frontend will be published as a **Power Apps Code App**.
 
-Die Daten werden in Microsoft Dataverse gespeichert. Der Backend-Zugriff auf Dataverse wird über OAuth und Microsoft Entra ID abgesichert.
+Data is stored in Microsoft Dataverse. Backend access to Dataverse is secured using OAuth and Microsoft Entra ID.
 
-## Projektstatus
+## Project Status
 
-Das Projekt befindet sich aktuell in der initialen Einrichtungs- und Planungsphase.
+The project is currently in its initial setup and planning phase.
 
-## Projekt
+## Project
 
-Semesterprojekt: Autovermietungs-System
-Projektname: **GO**
-Unternehmen: **Golders.ch**
+Semester project: Vehicle rental system
+
+Project name: **GO**
+
+Company: **Golders.ch**

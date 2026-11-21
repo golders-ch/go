@@ -1,33 +1,33 @@
 @startuml
 
-class auto {
+class Vehicle {
     - id: String (final)
-    - marke: String (final)
-    - modell: String (final)
-    - sitze: int (final)
-    - türen: int (final)
-    - kraftstoff: enum { BENZIN, DIESEL, ELEKTRO, HYBRID } (final)
-    - getriebe: String (final)
-    - kennzeichen: String (final)
-    - nutzlast: double (final)
-    - ladevolumen: double (final)
-    - status: enum { VERFUEGBAR, VERMIETET, WARTUNG }
+    - make: String (final)
+    - model: String (final)
+    - seats: int (final)
+    - doors: int (final)
+    - fuelType: enum { PETROL, DIESEL, ELECTRIC, HYBRID } (final)
+    - transmission: String (final)
+    - licensePlate: String (final)
+    - payloadCapacity: double (final)
+    - cargoVolume: double (final)
+    - status: enum { AVAILABLE, RENTED, MAINTENANCE }
 }
 
-class mitarbeiter {
-    - entraID: String
-    - rolle: enum { MITARBEITER, ADMIN }
+class Employee {
+    - entraId: String
+    - role: enum { EMPLOYEE, ADMIN }
 }
 
-class reservierung {
+class Reservation {
     - id: String
-    - reservierungsnummer: String
-    - startdatum: Date
-    - enddatum: Date
-    - status: enum { PROVISORISCH, BESTAETIGT, AKTIV, ABGESCHLOSSEN, ABGESAGT }
+    - reservationNumber: String
+    - startDateTime: LocalDateTime
+    - endDateTime: LocalDateTime
+    - status: enum { PROVISIONAL, CONFIRMED, ACTIVE, COMPLETED, CANCELLED }
 }
 
-mitarbeiter "1" -- "0..*" reservierung
-auto "1" -- "0..*" reservierung
+Employee "1" -- "0..*" Reservation
+Vehicle "1" -- "0..*" Reservation
 
 @enduml

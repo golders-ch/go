@@ -1,150 +1,158 @@
 # Learning Log
 
-## 2026-10-31 – Domänenmodell in Java
+## 2026-10-31 – Java domain model
 
-### Was ich gelernt habe
+### What I learned
 
-**Package-Struktur in Java:**
+**Java package structure:**
 
-- Der Ordnerpfad muss exakt zum Package-Namen passen
-- `package ch.golders.backend.domain;` → Datei liegt in `ch/golders/backend/domain/`
-- Ohne Package-Deklaration landet die Klasse im Default-Package (nicht importierbar)
+- The directory path must exactly match the package name
+- `package ch.golders.backend.domain;` → file is in `ch/golders/backend/domain/`
+- Without a package declaration, a class is placed in the default package
+  (which cannot be imported)
 
 **Enums:**
 
-- Für kleine, bekannte Wertemengen, die das System steuern (Status, Rollen, Typen)
-- NICHT für Daten, die sich ändern oder vom Benutzer eingegeben werden (Marken, Modelle)
-- Beispiel: `Kraftstoff` als Enum ✅, `Marke` als String ✅
+- Use enums for small, known sets of values that control the system (statuses,
+  roles, types)
+- Do NOT use enums for data that changes or is entered by a user (makes, models)
+- Example: `FuelType` as an enum ✅, `make` as a string ✅
 
-**Immutability mit `final`:**
+**Immutability with `final`:**
 
-- Felder, die sich nie ändern, als `final` deklarieren
-- Verhindert versehentliche Änderungen
-- Macht Code leichter verständlich und thread-sicher
-- Beispiel: `private final String id;` – kann nur im Konstruktor gesetzt werden
+- Declare fields that never change as `final`
+- Prevents accidental changes
+- Makes code easier to understand and thread-safe
+- Example: `private final String id;` – can only be set in the constructor
 
-**Kapselung:**
+**Encapsulation:**
 
-- Felder immer `private` machen
-- Zugriff nur über Getter
-- Keine Setter für Felder, die sich nicht ändern sollen
-- Später: Sprechende Methoden statt Setter (z.B. `vermieten()` statt `setStatus()`)
+- Always make fields `private`
+- Access them only through getters
+- Do not add setters for fields that should not change
+- Later: use meaningful methods instead of setters (for example,
+  `rent()` instead of `setStatus()`)
 
-**Bidirektionale Beziehungen vermeiden:**
+**Avoiding bidirectional relationships:**
 
-- `Mitarbeiter` hat KEINE `List<Reservierung>`
-- Beziehungen werden über Repository abgebildet
-- Einfacher, flexibler, weniger fehleranfällig
+- `Employee` does NOT have a `List<Reservation>`
+- Relationships are represented through repositories
+- Simpler, more flexible, and less error-prone
 
-**Moderne Datums-API:**
+**Modern date API:**
 
-- `java.time.LocalDate` statt veraltetem `java.util.Date`
-- Nur Datum, ohne Zeitzone – perfekt für Geburtstage und Reservierungszeiträume
+- Use `java.time.LocalDate` instead of the outdated `java.util.Date`
+- Date only, without a time zone – ideal for birthdays and reservation periods
 
 **Maven:**
 
-- `mvnw.cmd compile` – kompiliert den Code
-- Maven Wrapper lädt automatisch die richtige Maven-Version
-- Kompilieren ist pro Datei – nur geänderte Dateien werden neu kompiliert
-- Bytecode (`.class`-Dateien) läuft überall, wo eine JVM läuft
+- `mvnw.cmd compile` – compiles the code
+- The Maven Wrapper automatically downloads the correct Maven version
+- Compilation is per file – only changed files are recompiled
+- Bytecode (`.class` files) runs anywhere a JVM is available
 
-**Git Commit Messages:**
+**Git commit messages:**
 
 - Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, etc.
-- Kurze erste Zeile (max. 50-72 Zeichen)
-- Details im Body
+- Keep the first line short (50–72 characters maximum)
+- Put details in the body
 
-## 2026-11-09 – Repository-Interfaces in Java
+## 2026-11-09 – Repository interfaces in Java
 
-### Was ich gelernt habe
+### What I learned
 
-**Interfaces als Vertrag:**
+**Interfaces as contracts:**
 
-- Ein Interface definiert nur Methodensignaturen, keine Implementierung
-- Methoden sind implizit `public` – Modifier kann man weglassen
-- Die Geschäftslogik hängt nur vom Interface ab, nicht von der Implementierung
-  (Dependency Inversion) → Dataverse-Implementierung später austauschbar
+- An interface defines method signatures, not implementations
+- Methods are implicitly `public` – the modifier can be omitted
+- Business logic depends only on the interface, not the implementation
+  (Dependency Inversion) → a Dataverse implementation can be swapped in later
 
-**Default-Package-Falle:**
+**Default package pitfall:**
 
-- Ohne `package`-Deklaration landet eine Klasse im namenlosen Default-Package
-- Klassen in benannten Packages können Default-Package-Klassen nicht importieren
-- Symptom: "Symbol nicht gefunden" für eigentlich existierende Klassen
+- Without a `package` declaration, a class is placed in the unnamed default
+  package
+- Classes in named packages cannot import classes from the default package
+- Symptom: "cannot find symbol" for classes that actually exist
 
-## 2026-11-09 – Repository-Pattern: Interface vs. Implementierung
+## 2026-11-09 – Repository pattern: interface vs. implementation
 
-### Was ich gelernt habe
+### What I learned
 
-**Die Trennung Interface (domain) / Klasse (infrastructure):**
+**Separating the interface (`domain`) from the class (`infrastructure`):**
 
-- Das Interface in `domain` ist der **Vertrag** (Steckdose) – nur Signaturen, keine Logik
-- Die Klasse in `infrastructure` ist die **Umsetzung** (Stecker) – enthält die echte
-  Logik (z.B. `HashMap`)
-- `implements` = Versprechen an den Compiler, alle Interface-Methoden zu liefern
-- `@Override` markiert Methoden aus dem Interface → Compiler warnt bei Tippfehlern
+- The interface in `domain` is the **contract** (socket) – signatures only, no
+  logic
+- The class in `infrastructure` is the **implementation** (plug) – it contains
+  the actual logic (for example, `HashMap`)
+- `implements` promises the compiler that all interface methods will be
+  provided
+- `@Override` marks methods from the interface → the compiler warns about typos
 
-**Der Nutzen:**
+**The benefits:**
 
-- Später kommt `DataverseAutoRepository implements AutoRepository` als zweite
-  Implementierung dazu
-- Der Service kennt nur das Interface → beim Wechsel ändert sich im Service
-  **keine Zeile**
-- Abhängigkeiten zeigen nach innen Richtung `domain` (Dependency Inversion)
+- A second implementation can later be added as
+  `DataverseVehicleRepository implements VehicleRepository`
+- The service knows only the interface → switching implementations requires
+  **no changes** in the service
+- Dependencies point inward toward `domain` (Dependency Inversion)
 
-**Auch intern gegen Interfaces programmieren:**
+**Use interfaces internally as well:**
 
-- `Map<String, Auto> autos = new HashMap<>()` statt `HashMap<...> autos`
-- Gleiches Prinzip, eine Ebene tiefer
+- `Map<String, Vehicle> vehicles = new HashMap<>()` instead of
+  `HashMap<...> vehicles`
+- Same principle, one level deeper
 
-## 2026-11-09 – In-Memory-Repositories implementiert
+## 2026-11-09 – In-memory repositories implemented
 
-### Was ich gelernt habe
+### What I learned
 
-**HashMap als "Datenbank":**
+**HashMap as a "database":**
 
-- `HashMap<String, Auto>` – Key ist die ID, Value das Objekt
-- `put(key, value)` = INSERT/UPDATE, `get(key)` = SELECT, `values()` = alle Einträge
-- `findAll()` gibt `new ArrayList<>(map.values())` zurück (defensive Kopie –
-  aussen kann niemand die interne Map verändern)
+- `HashMap<String, Vehicle>` – the key is the ID, the value is the object
+- `put(key, value)` = INSERT/UPDATE, `get(key)` = SELECT, `values()` = all entries
+- `findAll()` returns `new ArrayList<>(map.values())` (defensive copy – callers
+  cannot change the internal map)
 
-**Filter-Methoden mit Schleife:**
+**Filtering with loops:**
 
-- Über `map.values()` iterieren, per `if` filtern, Treffer in Ergebnis-Liste sammeln
-- Zugehörigkeit über **ID-Vergleich** prüfen, nicht Objekt-Referenz:
-  `reservierung.getAuto().getId().equals(auto.getId())`
+- Iterate over `map.values()`, filter with `if`, and collect matches in a result
+  list
+- Check relationships using **ID comparisons**, not object references:
+  `reservation.getVehicle().getId().equals(vehicle.getId())`
 
-**Method Chaining:**
+**Method chaining:**
 
-- `reservierung.getAuto().getId()` – jeder Getter gibt ein Objekt zurück,
-  auf dem der nächste Getter aufgerufen wird
-- `Reservierung` speichert Objekte (`Auto`, `Mitarbeiter`), keine IDs
+- `reservation.getVehicle().getId()` – each getter returns an object on which
+  the next getter is called
+- `Reservation` stores objects (`Vehicle`, `Employee`), not IDs
 
-**Typische Stolpersteine:**
+**Common pitfalls:**
 
-- Methodensignatur muss beim `implements` **exakt** dem Interface entsprechen
-  (Name, Parameter-Typen, Rückgabetyp) – sonst "setzt abstrakte Methode nicht
-  ausser Kraft"
-- Java ist case-sensitiv: `entraId` ≠ `entraID` – "Symbol nicht gefunden"
-  heisst oft: Schreibweise prüfen
-- Methoden, die das Interface nicht deklariert, dürfen kein `@Override` haben
+- The method signature when implementing an interface must match it **exactly**
+  (name, parameter types, return type) – otherwise the compiler reports that an
+  abstract method has not been implemented
+- Java is case-sensitive: `entraId` ≠ `entraID` – a "cannot find symbol" error
+  often means the spelling should be checked
+- Methods not declared in the interface must not have `@Override`
 
-## 2026-11-12 – Service und Überschneidungsprüfung
+## 2026-11-12 – Service and overlap checks
 
-- `domain` beschreibt Fachmodell und Repository-Verträge; `application`
-  koordiniert Anwendungsfälle; `infrastructure` implementiert technische
-  Zugriffe. Fachregeln können je nach Verantwortung auch im Modell liegen.
-- Ein Service implementiert das Repository nicht selbst: Er erhält ein konkretes
-  Repository-Objekt über seinen Konstruktor und verwendet es über den Interface-Typ.
-  Die Verdrahtung muss noch erfolgen; ein Interface erzeugt kein Objekt.
-- Ein In-Memory-Repository besitzt pro Instanz eine eigene Map. Beim Neustart
-  gehen die darin gespeicherten Daten verloren.
-- Zwei gültige Zeiträume überschneiden sich, wenn jeder vor dem Ende des
-  anderen beginnt. Direkt anschliessende Zeiträume überschneiden sich nicht.
-- Enum-Werte werden als Enum verglichen, nicht als Text.
+- `domain` describes the domain model and repository contracts; `application`
+  coordinates use cases; `infrastructure` implements technical access. Depending
+  on responsibility, business rules can also belong in the model.
+- A service does not implement the repository itself: it receives a repository
+  object through its constructor and uses it through the interface type. Wiring
+  is still required; an interface does not create an object.
+- Each in-memory repository instance owns its own map. Its data is lost when the
+  application restarts.
+- Two valid time periods overlap if each starts before the other ends. Adjacent
+  time periods do not overlap.
+- Compare enum values as enums, not as text.
 
-### Nächste Lernziele
+### Next learning goals
 
-- Überschneidungsprüfung mit dem Speichern verbinden
-- Gültige Zeiträume und relevante Reservierungsstatus festlegen
-- Unit-Tests mit JUnit schreiben
-- Statuswechsel mit Validierung implementieren
+- Connect overlap checks with saving
+- Define valid time periods and relevant reservation statuses
+- Write unit tests with JUnit
+- Implement validated status transitions

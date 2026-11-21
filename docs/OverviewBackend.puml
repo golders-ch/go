@@ -1,0 +1,213 @@
+@startuml OverviewBackend
+title Backend Overview: Application, Domain, and Infrastructure
+allowmixing
+
+' This diagram is an educational overview.
+' Not every component shown is wired into the application yet.
+
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam noteBackgroundColor #FFF8DC
+skinparam noteBorderColor #D6B656
+
+legend top
+  |= Meaning |= Description |
+  | **solid line** | Dependency in the current code |
+  | **dashed line** | Planned call or missing wiring |
+  | Arrow to interface | The caller knows the contract, not the concrete technology |
+  | Dot --> | The arrow points to the component this component depends on or uses |
+endlegend
+
+package "API / Input (planned)" #F4F4F4 {
+  component "REST Controller" as Controller <<not_yet_present>>
+  note bottom of Controller
+    Later:
+    * Receive HTTP requests
+    * Convert JSON to Java objects
+    * Call a service method
+
+    The controller must not contain availability rules.
+  end note
+}
+
+package "Application" #DCEEFF {
+  class ReservationService {
+    - reservationRepository: ReservationRepository
+    --
+    + ReservationService(repository)
+    ~ getReservationsByVehicle(vehicle): List<Reservation>
+    - reservationsOverlap(first, second): boolean
+    - overlapsExistingReservations(newReservation): boolean
+    + reserve(newReservation): void
+  }
+
+  note right of ReservationService
+    **Responsibilities of the application layer**
+    1. Load data through a repository
+    2. Apply or coordinate business rules
+    3. Save the result
+
+    **Important:** The service knows only the
+    ReservationRepository interface. It does not know whether
+    the data is stored in a HashMap, Dataverse, or PostgreSQL.
+
+    **Current state:** The helper methods and reserve(...) are implemented.
+  end note
+}
+
+package "Domain" #E8F5E9 {
+  class Reservation {
+    - id: String
+    - reservationNumber: String
+    - startDateTime: LocalDateTime
+    - endDateTime: LocalDateTime
+    - status: ReservationStatus
+    --
+    + getStartDateTime()
+    + getEndDateTime()
+    + getStatus()
+    + getVehicle()
+    + getEmployee()
+  }
+
+  class Vehicle {
+    - id: String
+    - make: String
+    - model: String
+    - status: VehicleStatus
+  }
+
+  class Employee {
+    - entraId: String
+    - role: Role
+  }
+
+  enum ReservationStatus {
+    PROVISIONAL
+    CONFIRMED
+    ACTIVE
+    COMPLETED
+    CANCELLED
+  }
+
+  enum VehicleStatus {
+    AVAILABLE
+    RENTED
+    MAINTENANCE
+  }
+
+  enum FuelType {
+    PETROL
+    DIESEL
+    ELECTRIC
+    HYBRID
+  }
+
+  enum Role {
+    EMPLOYEE
+    ADMIN
+  }
+
+  interface ReservationRepository {
+    + save(reservation): void
+    + findById(id): Reservation
+    + findByEmployee(employee): List<Reservation>
+    + findByVehicle(vehicle): List<Reservation>
+  }
+
+  interface VehicleRepository {
+    + save(vehicle): void
+    + findById(id): Vehicle
+    + findAll(): List<Vehicle>
+    + delete(vehicle): void
+  }
+
+  interface EmployeeRepository {
+    + save(employee): void
+    + findByEntraId(entraId): Employee
+  }
+
+  Reservation "*" --> "1" Vehicle : reserves
+  Reservation "*" --> "1" Employee : reserved by
+  Reservation --> ReservationStatus
+
+  note as DomainNote
+    **Domain = "What is true and important in this business area?"**
+
+    Contains:
+    * Domain objects such as Vehicle, Employee, and Reservation
+    * Domain types such as ReservationStatus
+    * Repository interfaces as required contracts
+
+    Does NOT contain:
+    * HTTP, JSON, or controllers
+    * A HashMap as a database
+    * Dataverse-specific code
+
+    The interfaces are intentionally located in the domain package
+    so that Application and Domain know only the required contract,
+    not its technical implementation.
+  end note
+}
+
+package "Infrastructure" #FFF2CC {
+  class InMemoryReservationRepository {
+    - reservations: HashMap<String, Reservation>
+    + save(reservation): void
+    + findById(id): Reservation
+    + findByVehicle(vehicle): List<Reservation>
+    + findByEmployee(employee): List<Reservation>
+  }
+
+  class InMemoryVehicleRepository {
+    - vehicles: HashMap<String, Vehicle>
+  }
+
+  class InMemoryEmployeeRepository {
+    - employeesByEntraId: HashMap<String, Employee>
+  }
+
+  component "Dataverse Repository" as DataverseRepository <<later>>
+
+  note as InfrastructureNote
+    **Infrastructure = "How is a contract fulfilled technically?"**
+
+    InMemoryReservationRepository is currently a simple
+    implementation using a HashMap. A Dataverse implementation
+    can be added later or used as an alternative.
+
+    The HashMap exists only for each repository instance.
+    Its data is lost when the application restarts.
+  end note
+}
+
+Controller ..> ReservationService : calls later
+ReservationService --> ReservationRepository : requires contract
+ReservationService --> Reservation : processes
+InMemoryReservationRepository ..|> ReservationRepository : implements
+InMemoryVehicleRepository ..|> VehicleRepository : implements
+InMemoryEmployeeRepository ..|> EmployeeRepository : implements
+DataverseRepository ..|> ReservationRepository : planned implementation
+
+note as DependencyInversion
+  **Dependency Inversion / inward dependency**
+
+  The service says: "I need some ReservationRepository."
+  The application setup provides a concrete
+  InMemoryReservationRepository object.
+
+  Service constructor:
+  public ReservationService(ReservationRepository repository)
+
+  This is Dependency Injection: the concrete dependency is
+  provided from outside. The service does not construct it with
+  "new InMemoryReservationRepository()".
+
+  This wiring is still missing in Spring.
+end note
+
+DependencyInversion .. ReservationService
+
+@enduml

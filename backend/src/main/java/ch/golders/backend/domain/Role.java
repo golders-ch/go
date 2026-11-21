@@ -1,6 +1,6 @@
 package ch.golders.backend.domain;
 
-public enum Rolle {
-    MITARBEITER,
+public enum Role {
+    EMPLOYEE,
     ADMIN
 }
