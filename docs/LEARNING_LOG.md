@@ -1,158 +1,184 @@
-# Learning Log
+# Lernjournal
 
-## 2026-10-31 – Java domain model
+## 2026-10-31 – Java-Domänenmodell
 
-### What I learned
+### Das habe ich gelernt
 
-**Java package structure:**
+**Paketstruktur in Java:**
 
-- The directory path must exactly match the package name
-- `package ch.golders.backend.domain;` → file is in `ch/golders/backend/domain/`
-- Without a package declaration, a class is placed in the default package
-  (which cannot be imported)
+- Der Verzeichnispfad muss genau dem Paketnamen entsprechen.
+- `package ch.golders.backend.domain;` → Die Datei liegt in
+  `ch/golders/backend/domain/`.
+- Ohne Paketdeklaration befindet sich eine Klasse im Standardpaket und kann
+  nicht importiert werden.
 
-**Enums:**
+**Aufzählungstypen (Enums):**
 
-- Use enums for small, known sets of values that control the system (statuses,
-  roles, types)
-- Do NOT use enums for data that changes or is entered by a user (makes, models)
-- Example: `FuelType` as an enum ✅, `make` as a string ✅
+- Enums eignen sich für kleine, bekannte Wertemengen, die das System steuern
+  (Status, Rollen, Typen).
+- Veränderliche oder von Benutzern eingegebene Daten sollten keine Enums sein
+  (zum Beispiel Marken und Modelle).
+- Beispiel: `FuelType` als Enum ✅, `make` als Zeichenkette ✅
 
-**Immutability with `final`:**
+**Unveränderlichkeit mit `final`:**
 
-- Declare fields that never change as `final`
-- Prevents accidental changes
-- Makes code easier to understand and thread-safe
-- Example: `private final String id;` – can only be set in the constructor
+- Felder, die sich nie ändern, als `final` deklarieren.
+- Das verhindert versehentliche Änderungen.
+- Der Code wird dadurch verständlicher und threadsicherer.
+- Beispiel: `private final String id;` – der Wert kann nur im Konstruktor
+  gesetzt werden.
 
-**Encapsulation:**
+**Kapselung:**
 
-- Always make fields `private`
-- Access them only through getters
-- Do not add setters for fields that should not change
-- Later: use meaningful methods instead of setters (for example,
-  `rent()` instead of `setStatus()`)
+- Felder immer als `private` deklarieren.
+- Zugriff nur über Getter erlauben.
+- Keine Setter für Felder bereitstellen, die sich nicht ändern sollen.
+- Später sprechende Methoden statt Setter verwenden (zum Beispiel `rent()`
+  statt `setStatus()`).
 
-**Avoiding bidirectional relationships:**
+**Bidirektionale Beziehungen vermeiden:**
 
-- `Employee` does NOT have a `List<Reservation>`
-- Relationships are represented through repositories
-- Simpler, more flexible, and less error-prone
+- `Employee` enthält keine `List<Reservation>`.
+- Beziehungen werden über Repositories abgebildet.
+- Das ist einfacher, flexibler und weniger fehleranfällig.
 
-**Modern date API:**
+**Moderne Datums-API:**
 
-- Use `java.time.LocalDate` instead of the outdated `java.util.Date`
-- Date only, without a time zone – ideal for birthdays and reservation periods
+- `java.time.LocalDate` statt der veralteten Klasse `java.util.Date` verwenden.
+- Ein Datum ohne Uhrzeit und Zeitzone eignet sich zum Beispiel für Geburtstage
+  und Reservierungszeiträume.
 
 **Maven:**
 
-- `mvnw.cmd compile` – compiles the code
-- The Maven Wrapper automatically downloads the correct Maven version
-- Compilation is per file – only changed files are recompiled
-- Bytecode (`.class` files) runs anywhere a JVM is available
+- `mvnw.cmd compile` kompiliert den Code.
+- Der Maven Wrapper lädt automatisch die passende Maven-Version herunter.
+- Die Kompilierung erfolgt dateiweise; neu kompiliert werden nur geänderte
+  Dateien.
+- Bytecode-Dateien (`.class`) laufen überall dort, wo eine JVM verfügbar ist.
 
-**Git commit messages:**
+**Git-Commit-Nachrichten:**
 
-- Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, etc.
-- Keep the first line short (50–72 characters maximum)
-- Put details in the body
+- Conventional Commits verwenden: `feat:`, `fix:`, `docs:`, `chore:` usw.
+- Die erste Zeile kurz halten (höchstens 50–72 Zeichen).
+- Einzelheiten in den Nachrichtentext schreiben.
 
-## 2026-11-09 – Repository interfaces in Java
+## 2026-11-09 – Repository-Schnittstellen in Java
 
-### What I learned
+### Das habe ich gelernt
 
-**Interfaces as contracts:**
+**Schnittstellen als Verträge:**
 
-- An interface defines method signatures, not implementations
-- Methods are implicitly `public` – the modifier can be omitted
-- Business logic depends only on the interface, not the implementation
-  (Dependency Inversion) → a Dataverse implementation can be swapped in later
+- Eine Schnittstelle legt Methodensignaturen fest, aber keine Implementierung.
+- Methoden sind implizit `public`; der Sichtbarkeitsmodifizierer kann
+  weggelassen werden.
+- Die Geschäftslogik hängt nur von der Schnittstelle ab, nicht von der
+  konkreten Umsetzung (Dependency Inversion). Dadurch kann später eine
+  Dataverse-Implementierung eingesetzt werden.
 
-**Default package pitfall:**
+**Fallstrick beim Standardpaket:**
 
-- Without a `package` declaration, a class is placed in the unnamed default
-  package
-- Classes in named packages cannot import classes from the default package
-- Symptom: "cannot find symbol" for classes that actually exist
+- Ohne `package`-Deklaration befindet sich eine Klasse im unbenannten
+  Standardpaket.
+- Klassen in benannten Paketen können Klassen aus dem Standardpaket nicht
+  importieren.
+- Typische Fehlermeldung: „cannot find symbol“ für eine eigentlich vorhandene
+  Klasse.
 
-## 2026-11-09 – Repository pattern: interface vs. implementation
+## 2026-11-09 – Repository-Muster: Schnittstelle und Implementierung
 
-### What I learned
+### Das habe ich gelernt
 
-**Separating the interface (`domain`) from the class (`infrastructure`):**
+**Trennung von Schnittstelle (`domain`) und Klasse (`infrastructure`):**
 
-- The interface in `domain` is the **contract** (socket) – signatures only, no
-  logic
-- The class in `infrastructure` is the **implementation** (plug) – it contains
-  the actual logic (for example, `HashMap`)
-- `implements` promises the compiler that all interface methods will be
-  provided
-- `@Override` marks methods from the interface → the compiler warns about typos
+- Die Schnittstelle in `domain` ist der **Vertrag** (Steckdose): Sie enthält
+  Signaturen, aber keine Logik.
+- Die Klasse in `infrastructure` ist die **Umsetzung** (Stecker): Sie enthält
+  die tatsächliche Logik, zum Beispiel mit einer `HashMap`.
+- Mit `implements` wird dem Compiler zugesichert, dass alle Methoden der
+  Schnittstelle bereitgestellt werden.
+- `@Override` kennzeichnet Methoden aus der Schnittstelle; der Compiler kann
+  so vor Tippfehlern warnen.
 
-**The benefits:**
+**Vorteile:**
 
-- A second implementation can later be added as
-  `DataverseVehicleRepository implements VehicleRepository`
-- The service knows only the interface → switching implementations requires
-  **no changes** in the service
-- Dependencies point inward toward `domain` (Dependency Inversion)
+- Später kann eine zweite Umsetzung ergänzt werden, zum Beispiel
+  `DataverseVehicleRepository implements VehicleRepository`.
+- Der Service kennt nur die Schnittstelle. Beim Wechsel der Umsetzung sind
+  daher **keine Änderungen** am Service nötig.
+- Abhängigkeiten zeigen nach innen in Richtung `domain` (Dependency Inversion).
 
-**Use interfaces internally as well:**
+**Auch intern über Schnittstellen programmieren:**
 
-- `Map<String, Vehicle> vehicles = new HashMap<>()` instead of
-  `HashMap<...> vehicles`
-- Same principle, one level deeper
+- `Map<String, Vehicle> vehicles = new HashMap<>()` statt
+  `HashMap<...> vehicles`.
+- Dasselbe Prinzip gilt also auch eine Ebene tiefer.
 
-## 2026-11-09 – In-memory repositories implemented
+## 2026-11-09 – In-Memory-Repositories umgesetzt
 
-### What I learned
+### Das habe ich gelernt
 
-**HashMap as a "database":**
+**`HashMap` als „Datenbank“:**
 
-- `HashMap<String, Vehicle>` – the key is the ID, the value is the object
-- `put(key, value)` = INSERT/UPDATE, `get(key)` = SELECT, `values()` = all entries
-- `findAll()` returns `new ArrayList<>(map.values())` (defensive copy – callers
-  cannot change the internal map)
+- Bei `HashMap<String, Vehicle>` ist der Schlüssel die ID und der Wert das
+  Objekt.
+- `put(key, value)` entspricht INSERT/UPDATE, `get(key)` entspricht SELECT und
+  `values()` liefert alle Einträge.
+- `findAll()` gibt `new ArrayList<>(map.values())` zurück (defensive Kopie –
+  Aufrufer können die interne Map nicht verändern).
 
-**Filtering with loops:**
+**Filtern mit Schleifen:**
 
-- Iterate over `map.values()`, filter with `if`, and collect matches in a result
-  list
-- Check relationships using **ID comparisons**, not object references:
+- Über `map.values()` iterieren, mit `if` filtern und passende Einträge in
+  einer Ergebnisliste sammeln.
+- Beziehungen anhand von **ID-Vergleichen** statt anhand von Objektverweisen
+  prüfen:
   `reservation.getVehicle().getId().equals(vehicle.getId())`
 
-**Method chaining:**
+**Methodenverkettung:**
 
-- `reservation.getVehicle().getId()` – each getter returns an object on which
-  the next getter is called
-- `Reservation` stores objects (`Vehicle`, `Employee`), not IDs
+- Bei `reservation.getVehicle().getId()` liefert jeder Getter ein Objekt
+  zurück, auf dem anschliessend der nächste Getter aufgerufen wird.
+- `Reservation` speichert Objekte (`Vehicle`, `Employee`), nicht deren IDs.
 
-**Common pitfalls:**
+**Häufige Fehlerquellen:**
 
-- The method signature when implementing an interface must match it **exactly**
-  (name, parameter types, return type) – otherwise the compiler reports that an
-  abstract method has not been implemented
-- Java is case-sensitive: `entraId` ≠ `entraID` – a "cannot find symbol" error
-  often means the spelling should be checked
-- Methods not declared in the interface must not have `@Override`
+- Die Methodensignatur bei `implements` muss **exakt** mit der Schnittstelle
+  übereinstimmen (Name, Parametertypen und Rückgabetyp). Andernfalls meldet der
+  Compiler, dass eine abstrakte Methode nicht umgesetzt wurde.
+- Java unterscheidet Gross- und Kleinschreibung: `entraId` ≠ `entraID`.
+  Bei „cannot find symbol“ sollte oft die Schreibweise geprüft werden.
+- Methoden, die nicht in der Schnittstelle deklariert sind, dürfen kein
+  `@Override` tragen.
 
-## 2026-11-12 – Service and overlap checks
+## 2026-11-12 – Service und Überschneidungsprüfung
 
-- `domain` describes the domain model and repository contracts; `application`
-  coordinates use cases; `infrastructure` implements technical access. Depending
-  on responsibility, business rules can also belong in the model.
-- A service does not implement the repository itself: it receives a repository
-  object through its constructor and uses it through the interface type. Wiring
-  is still required; an interface does not create an object.
-- Each in-memory repository instance owns its own map. Its data is lost when the
-  application restarts.
-- Two valid time periods overlap if each starts before the other ends. Adjacent
-  time periods do not overlap.
-- Compare enum values as enums, not as text.
+- `domain` beschreibt das Fachmodell und die Repository-Verträge;
+  `application` koordiniert Anwendungsfälle; `infrastructure` setzt technische
+  Zugriffe um. Je nach Zuständigkeit können Fachregeln auch im Modell liegen.
+- Ein Service implementiert das Repository nicht selbst. Er erhält ein
+  Repository-Objekt über seinen Konstruktor und verwendet es über den
+  Schnittstellentyp. Die Verdrahtung muss noch erfolgen; eine Schnittstelle
+  erzeugt kein Objekt.
+- Jede In-Memory-Repository-Instanz besitzt eine eigene Map. Beim Neustart der
+  Anwendung gehen die darin gespeicherten Daten verloren.
+- Zwei gültige Zeiträume überschneiden sich, wenn jeder vor dem Ende des
+  anderen beginnt. Direkt aneinandergrenzende Zeiträume überschneiden sich
+  nicht.
+- Enum-Werte werden als Enums verglichen, nicht als Text.
 
-### Next learning goals
+## 2026-11-21 – Reservierungsservice
 
-- Connect overlap checks with saving
-- Define valid time periods and relevant reservation statuses
-- Write unit tests with JUnit
-- Implement validated status transitions
+- Der Konstruktor von `Reservation` prüft, dass der Startzeitpunkt nicht nach
+  dem Endzeitpunkt liegt.
+- `ReservationService.reserve(...)` prüft auf Überschneidungen mit bestehenden
+  Reservierungen und speichert die neue Reservierung über das Repository.
+- Der Spring-Kontext-Test prüft, ob die Anwendung startet. Fachliche Tests für
+  den Reservierungsservice fehlen noch.
+
+### Nächste Lernziele
+
+- Den Reservierungsservice und das Repository in Spring verdrahten.
+- Das Verhalten bei abgeschlossenen Reservierungen festlegen.
+- Gültige Zeiträume und relevante Reservierungsstatus fachlich testen.
+- Unit-Tests mit JUnit schreiben.
+- Statuswechsel mit Validierung umsetzen.
