@@ -207,6 +207,9 @@
 - Eine bereits stornierte Reservierung blockiert denselben Zeitraum nicht.
   Sie wird zur Testvorbereitung direkt im Repository gespeichert; danach
   prüft der Test die neue Reservierung über den Service.
+- Eine teilweise Überschneidung desselben Fahrzeugs wird in beiden
+  zeitlichen Richtungen abgelehnt. Verschiedene Fahrzeuge können dagegen
+  zur gleichen Zeit reserviert werden.
 - Weitere Fälle für Zeiträume und Reservierungsstatus sind noch offen.
 
 Beispiele: [ReservationServiceTest](../backend/src/test/java/ch/golders/backend/application/ReservationServiceTest.java).

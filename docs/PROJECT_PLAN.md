@@ -38,6 +38,8 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 - ✅ Weitere Tests prüfen, dass Überschneidungen abgelehnt werden, direkt
   anschliessende Reservierungen erlaubt sind und stornierte Reservierungen
   einen Zeitraum nicht blockieren
+- ✅ Tests decken auch teilweise Überschneidungen und gleichzeitige
+  Reservierungen für verschiedene Fahrzeuge ab
 - ⬜ Reservierungsservice und Repository in Spring verdrahten
 - ⬜ Weitere fachliche Tests für den Reservierungsservice ergänzen
 - ⬜ Verhalten bei abgeschlossenen Reservierungen festlegen und umsetzen
