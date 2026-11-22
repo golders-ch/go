@@ -193,4 +193,20 @@
   und führt beim Methodenaufruf zu einer `NullPointerException`.
 - Der erste Test speichert eine Reservierung, ruft sie über ihre ID ab und
   prüft mit `assertSame`, ob es dasselbe Objekt ist.
-- Weitere Fälle wie Überschneidungen und Reservierungsstatus sind noch offen.
+- `findById` ruft das gespeicherte Objekt ab; erst die Assertion prüft das
+  Ergebnis. Ein erfolgreicher Methodenaufruf allein beweist nicht, dass
+  gespeichert wurde. `assertSame` prüft Objektidentität, nicht gleiche Werte;
+  bei einer späteren Datenbankanbindung kann ein Wertevergleich sinnvoll sein.
+- Ein weiterer Test prüft, dass eine überschneidende Reservierung abgelehnt
+  wird: `assertThrows` ist erfolgreich, wenn die erwartete Ausnahme auftritt.
+  Ohne Ausnahme oder bei einem anderen Ausnahmetyp schlägt der Test fehl.
+- Ein einfaches `try`/`catch` reicht dafür nicht aus, wenn der Test bei einer
+  ausbleibenden Ausnahme nicht ausdrücklich fehlschlägt.
+- Direkt aneinandergrenzende Reservierungen sind erlaubt. Feste Zeitpunkte
+  stellen sicher, dass der Test tatsächlich denselben Grenzzeitpunkt prüft.
+- Eine bereits stornierte Reservierung blockiert denselben Zeitraum nicht.
+  Sie wird zur Testvorbereitung direkt im Repository gespeichert; danach
+  prüft der Test die neue Reservierung über den Service.
+- Weitere Fälle für Zeiträume und Reservierungsstatus sind noch offen.
+
+Beispiele: [ReservationServiceTest](../backend/src/test/java/ch/golders/backend/application/ReservationServiceTest.java).

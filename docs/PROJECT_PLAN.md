@@ -35,6 +35,9 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 - ✅ Erster fachlicher Test für `ReservationService.reserve(...)`:
   Eine konfliktfreie Reservierung wird im In-Memory-Repository gespeichert
   und über ihre ID wiedergefunden
+- ✅ Weitere Tests prüfen, dass Überschneidungen abgelehnt werden, direkt
+  anschliessende Reservierungen erlaubt sind und stornierte Reservierungen
+  einen Zeitraum nicht blockieren
 - ⬜ Reservierungsservice und Repository in Spring verdrahten
 - ⬜ Weitere fachliche Tests für den Reservierungsservice ergänzen
 - ⬜ Verhalten bei abgeschlossenen Reservierungen festlegen und umsetzen

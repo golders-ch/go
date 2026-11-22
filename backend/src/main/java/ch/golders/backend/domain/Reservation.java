@@ -1,4 +1,5 @@
 package ch.golders.backend.domain;
+
 import java.time.LocalDateTime;
 
 public class Reservation {
@@ -10,7 +11,8 @@ public class Reservation {
     private final Vehicle vehicle;
     private final Employee employee;
 
-    public Reservation(String id, String reservationNumber, LocalDateTime startDateTime, LocalDateTime endDateTime, ReservationStatus status, Vehicle vehicle, Employee employee) {
+    public Reservation(String id, String reservationNumber, LocalDateTime startDateTime, LocalDateTime endDateTime,
+            ReservationStatus status, Vehicle vehicle, Employee employee) {
 
         if (startDateTime.isAfter(endDateTime)) {
             throw new IllegalArgumentException("The start date and time must be before the end date and time.");
@@ -44,7 +46,6 @@ public class Reservation {
     public ReservationStatus getStatus() {
         return status;
     }
-
 
     public Vehicle getVehicle() {
         return vehicle;
