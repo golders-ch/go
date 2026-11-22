@@ -180,5 +180,17 @@
 - Den Reservierungsservice und das Repository in Spring verdrahten.
 - Das Verhalten bei abgeschlossenen Reservierungen festlegen.
 - Gültige Zeiträume und relevante Reservierungsstatus fachlich testen.
-- Unit-Tests mit JUnit schreiben.
+- Weitere Unit-Tests mit JUnit schreiben.
 - Statuswechsel mit Validierung umsetzen.
+
+## 2026-11-22 – Erster Test für den Reservierungsservice
+
+- Eine JUnit-Testmethode führt eine Aktion aus und prüft das Ergebnis mit
+  einer Assertion. Ein grüner Test ohne Assertion beweist nicht, dass die
+  Reservierung gespeichert wurde.
+- Für den Test erhält der Service ein konkretes In-Memory-Repository über
+  seinen Konstruktor. Ein nicht initialisiertes Repository-Feld ist `null`
+  und führt beim Methodenaufruf zu einer `NullPointerException`.
+- Der erste Test speichert eine Reservierung, ruft sie über ihre ID ab und
+  prüft mit `assertSame`, ob es dasselbe Objekt ist.
+- Weitere Fälle wie Überschneidungen und Reservierungsstatus sind noch offen.

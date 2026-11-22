@@ -9,7 +9,7 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 - Architektur: Power Apps Code App → Spring-Boot-API → Microsoft Dataverse
 - Die gesamte Geschäftslogik liegt im Spring-Boot-Backend
 
-## Aktueller Stand (2026-11-21)
+## Aktueller Stand (2026-11-22)
 
 - ✅ Projektstruktur initialisiert (Frontend, Backend, Dokumentation)
 - ✅ Fachmodell definiert: `Vehicle`, `Employee`, `Reservation`
@@ -32,10 +32,11 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
   dem Endzeitpunkt liegen
 - ✅ `ReservationService.reserve(...)` prüft auf zeitliche Überschneidungen und
   speichert die Reservierung über das Repository
-- ✅ Backend-Tests erfolgreich ausgeführt; derzeit wird nur das Laden des
-  Spring-Kontexts getestet
+- ✅ Erster fachlicher Test für `ReservationService.reserve(...)`:
+  Eine konfliktfreie Reservierung wird im In-Memory-Repository gespeichert
+  und über ihre ID wiedergefunden
 - ⬜ Reservierungsservice und Repository in Spring verdrahten
-- ⬜ Fachliche Unit-Tests für den Reservierungsservice ergänzen
+- ⬜ Weitere fachliche Tests für den Reservierungsservice ergänzen
 - ⬜ Verhalten bei abgeschlossenen Reservierungen festlegen und umsetzen
 - ⬜ Fahrzeugstatus bei Reservierungen berücksichtigen
 - ⬜ Stornierung, Übernahme, Rückgabe und erlaubte Statuswechsel umsetzen
@@ -47,8 +48,8 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 
 1. **Backend: Geschäftslogik vervollständigen**
    - Reservierungsservice und Repository in Spring verdrahten
-   - Fachliche Tests für Zeiträume, Überschneidungen und Reservierungsstatus
-     schreiben
+   - Weitere fachliche Tests für Zeiträume, Überschneidungen und
+     Reservierungsstatus schreiben
    - Festlegen, wie abgeschlossene Reservierungen bei Überschneidungen
      berücksichtigt werden
    - Fahrzeugstatus prüfen
