@@ -1,5 +1,25 @@
 # Lernjournal
 
+## 2026-11-23 – Spring-Verdrahtung und Tests
+
+- `@Repository` und `@Service` markieren Klassen, die Spring beim
+  Component-Scan als Beans registriert und standardmässig beim Start erstellt.
+  Eine Bean wird standardmässig pro Spring-Kontext einmal angelegt.
+- Der Konstruktor des `ReservationService` fordert ein
+  `ReservationRepository` an; Spring übergibt die passende Implementierung.
+  `@Autowired` in einem Test stellt dem Test Beans zur Verfügung.
+- Die In-Memory-Repositories speichern weiterhin in einer `HashMap`;
+  `@Repository` macht daraus keine Datenbank. Beim Neustart gehen die Daten
+  verloren.
+- Fachliche Tests können Service und Repository ohne Spring selbst erstellen.
+  Ein `@SpringBootTest` lädt den Kontext und prüft ergänzend die
+  Zusammenarbeit der Spring-Beans. Der Test `reservationIsSaved` wurde
+  erfolgreich ausgeführt.
+- Lokale Variablen innerhalb einer Methode haben keinen Zugriffsmodifizierer
+  wie `private`. Bei Feldern auf Klassenebene kann `private` verwendet werden.
+- `assertEquals` vergleicht Werte; `assertSame` prüft, ob zwei Referenzen
+  dasselbe Objekt bezeichnen.
+
 ## 2026-10-31 – Java-Domänenmodell
 
 ### Das habe ich gelernt

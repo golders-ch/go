@@ -2,10 +2,10 @@ package ch.golders.backend.infrastructure;
 
 import ch.golders.backend.domain.Employee;
 import ch.golders.backend.domain.EmployeeRepository;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class InMemoryEmployeeRepository implements EmployeeRepository {
     private HashMap<String, Employee> employeesByEntraId = new HashMap<>();
 

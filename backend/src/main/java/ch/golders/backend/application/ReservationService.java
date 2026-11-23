@@ -5,7 +5,9 @@ import ch.golders.backend.domain.Reservation;
 import ch.golders.backend.domain.Vehicle;
 import ch.golders.backend.domain.ReservationStatus;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;

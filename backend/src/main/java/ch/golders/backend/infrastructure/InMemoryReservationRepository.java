@@ -1,4 +1,5 @@
 package ch.golders.backend.infrastructure;
+
 import ch.golders.backend.domain.Reservation;
 import ch.golders.backend.domain.ReservationRepository;
 import ch.golders.backend.domain.Employee;
@@ -6,7 +7,9 @@ import ch.golders.backend.domain.Vehicle;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class InMemoryReservationRepository implements ReservationRepository {
 
     private HashMap<String, Reservation> reservations = new HashMap<>();
