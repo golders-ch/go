@@ -29,6 +29,8 @@ package "API / Input (planned)" #F4F4F4 {
     * Call a service method
 
     The controller must not contain availability rules.
+    Authentication and Microsoft Entra ID integration are not
+    part of the current local-development scope.
   end note
 }
 
@@ -50,10 +52,11 @@ package "Application" #DCEEFF {
     3. Save the result
 
     **Important:** The service knows only the
-    ReservationRepository interface. It does not know whether
-    the data is stored in a HashMap, Dataverse, or PostgreSQL.
+    ReservationRepository interface. It does not know how the
+    repository stores its data.
 
     **Current state:** The helper methods and reserve(...) are implemented.
+    Spring discovers the service and its repository dependency.
   end note
 }
 
@@ -64,7 +67,12 @@ package "Domain" #E8F5E9 {
     - startDateTime: LocalDateTime
     - endDateTime: LocalDateTime
     - status: ReservationStatus
+    - vehicle: Vehicle
+    - employee: Employee
     --
+    + Reservation(...)
+    + getId()
+    + getReservationNumber()
     + getStartDateTime()
     + getEndDateTime()
     + getStatus()
@@ -76,6 +84,13 @@ package "Domain" #E8F5E9 {
     - id: String
     - make: String
     - model: String
+    - seats: int
+    - doors: int
+    - transmission: String
+    - licensePlate: String
+    - payloadCapacity: double
+    - cargoVolume: double
+    - fuelType: FuelType
     - status: VehicleStatus
   }
 
@@ -163,20 +178,25 @@ package "Infrastructure" #FFF2CC {
 
   class InMemoryVehicleRepository {
     - vehicles: HashMap<String, Vehicle>
+    + save(vehicle): void
+    + findById(id): Vehicle
+    + findAll(): List<Vehicle>
+    + delete(vehicle): void
   }
 
   class InMemoryEmployeeRepository {
     - employeesByEntraId: HashMap<String, Employee>
+    + save(employee): void
+    + findByEntraId(entraId): Employee
   }
-
-  component "Dataverse Repository" as DataverseRepository <<later>>
 
   note as InfrastructureNote
     **Infrastructure = "How is a contract fulfilled technically?"**
 
     InMemoryReservationRepository is currently a simple
-    implementation using a HashMap. A Dataverse implementation
-    can be added later or used as an alternative.
+    implementation using a HashMap. Local persistence with an
+    H2 database is planned; its repository implementation has
+    not been added yet.
 
     The HashMap exists only for each repository instance.
     Its data is lost when the application restarts.
@@ -189,14 +209,13 @@ ReservationService --> Reservation : processes
 InMemoryReservationRepository ..|> ReservationRepository : implements
 InMemoryVehicleRepository ..|> VehicleRepository : implements
 InMemoryEmployeeRepository ..|> EmployeeRepository : implements
-DataverseRepository ..|> ReservationRepository : planned implementation
 
 note as DependencyInversion
   **Dependency Inversion / inward dependency**
 
   The service says: "I need some ReservationRepository."
-  The application setup provides a concrete
-  InMemoryReservationRepository object.
+  Spring injects the registered InMemoryReservationRepository
+  into the service.
 
   Service constructor:
   public ReservationService(ReservationRepository repository)
@@ -205,7 +224,7 @@ note as DependencyInversion
   provided from outside. The service does not construct it with
   "new InMemoryReservationRepository()".
 
-  This wiring is still missing in Spring.
+  This wiring is currently implemented with Spring.
 end note
 
 DependencyInversion .. ReservationService

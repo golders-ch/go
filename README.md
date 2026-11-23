@@ -1,195 +1,103 @@
 # GO
 
-**GO** is an internal vehicle rental system for Golders.ch. Employees can find, reserve, pick up, and return company vehicles.
+**GO** is a semester project for an internal vehicle rental system at
+Golders.ch. Employees will be able to find, reserve, pick up, and return company
+vehicles.
 
-## Architecture
+## Current project direction
+
+The application is being developed locally. The reduced-scope target
+architecture is:
 
 ```text
-Power Apps Code App
-        ↓
-Spring Boot API
-        ↓
-Microsoft Dataverse
+Power Apps Code App (local) → Spring Boot backend (local) → H2 database
 ```
 
-All business logic is handled by the Spring Boot backend. The frontend does not access Dataverse directly.
+The original plan was to connect the Power Apps Code App to a Spring Boot API,
+store data in Microsoft Dataverse, deploy the backend to Azure Container Apps,
+and use Microsoft Entra ID. The expected implementation effort was too large
+for the project, so the scope was reduced to local execution with H2. Azure
+deployment, Dataverse, and Entra ID integration are not part of the current
+scope. The employee model retains an `entraId` field so Entra ID can be
+integrated later if needed.
+
+**Implementation status:** The domain model, reservation service, in-memory
+repositories, and reservation tests are present. The REST API and H2
+persistence are planned but not implemented yet; the frontend still contains
+template/demo content.
 
 ## Technologies
 
 ### Frontend
 
-- Power Apps Code App
-- React
-- TypeScript
-- Vite
-- Node.js and npm
+- Power Apps Code App, intended to run locally
+- React 19, TypeScript, and Vite
+- Tailwind CSS and shadcn/ui
+- React Router, TanStack Query, and Zustand
 
 ### Backend
 
 - Java 21
 - Spring Boot
 - Maven
-- REST API
-- Swagger / OpenAPI
+- H2 database (planned)
 
-### Platform
-
-- Azure Container Apps
-- Microsoft Dataverse
-- Microsoft Entra ID
-- GitHub
-
-## Project Structure
+## Project structure
 
 ```text
-golders-go/
-├── frontend/ # React / Power Apps Code App
-├── backend/ # Java / Spring Boot / Maven
-├── docs/ # Technical documentation
-├──.gitignore
+go/
+├── frontend/ # React / Vite application
+├── backend/  # Java / Spring Boot / Maven application
+├── docs/     # Project plan, decisions, learning log, and diagrams
 └── README.md
 ```
 
 ## Prerequisites
 
-The following tools are required for local development:
-
 - Git
-- Visual Studio Code
 - Java 21
-- Node.js (LTS version)
-- npm
-- Power Apps CLI
-- Access to a Power Platform development environment
+- Node.js (LTS) and npm
 
-## Setup
+## Local development
 
-### Clone the repository
+### Backend
 
-```powershell
-git clone <REPOSITORY-URL>
-cd golders-go
-```
-
-### Install and start the backend
-
-The backend uses the Maven Wrapper included in the repository. A separate Maven installation is therefore usually not required.
+Start the Spring Boot application:
 
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-The backend runs at the following address by default:
+The application listens at `http://localhost:8080` by default. Until the REST
+API and H2 persistence are implemented, the available backend functionality is
+limited to the current in-memory implementation.
 
-```text
-http://localhost:8080
-```
-
-### Install the frontend
-
-```powershell
-cd frontend
-npm install
-```
-
-The Power Apps tools only need to be installed globally once per computer:
-
-```powershell
-npm install --global @microsoft/power-apps-cli
-npm install --global @microsoft/power-apps
-```
-
-If this command already outputs a version, you can skip the two installation commands:
-
-```powershell
-pa --version
-```
-
-### Initialize the Power Apps Code App
-
-This step is only required if the project has not yet been connected to a Power Platform environment.
-
-```powershell
-pa app init --display-name "GO" --environment-id <ENVIRONMENT-ID>
-```
-
-### Start the frontend
-
-```powershell
-pa app run
-```
-
-Then open the displayed **Local Play** address in the same browser profile used to sign in to Power Apps.
-
-## Tests
-
-### Run backend tests
+Run backend tests:
 
 ```powershell
 cd backend
 .\mvnw.cmd test
 ```
 
-The unit tests are located in:
+### Frontend
 
-```text
-backend/src/test/
+Install dependencies and start the local Power Apps Code App:
+
+```powershell
+cd frontend
+npm install
+pa app run
 ```
 
-The tests focus on business logic, especially:
-
-- Validating reservation time periods
-- Preventing overlapping reservations
-- Checking vehicle status
-- Cancelling reservations
-- Vehicle pickup and return
-- Allowed and disallowed status transitions
-
-### Frontend tests
-
-Frontend tests will be added later with Vitest and React Testing Library once the first business components and user flows have been implemented.
-
-## Configuration
-
-Local credentials and secrets must not be checked into the Git repository.
-
-These include:
-
-- Dataverse URL
-- Microsoft Entra tenant ID
-- Client ID
-- Client Secret
-- Local API URLs
-- Personal access tokens
-
-Use files such as `.env.example` or sample configurations with empty placeholders for required variables.
+Frontend tests have not been added yet. Azure deployment and publishing to a
+Power Platform environment are outside the current project scope.
 
 ## Documentation
 
-The technical documentation is located in the `docs/` directory.
+Project documentation is in [`docs/`](docs/):
 
-Planned content:
-
-- `architecture.md` – software architecture
-- `setup-guide.md` – installation and setup guide
-- `technologies.md` – technologies used
-- Swagger UI – REST API documentation
-
-## Deployment
-
-The Spring Boot backend will later be deployed to **Azure Container Apps**. The frontend will be published as a **Power Apps Code App**.
-
-Data is stored in Microsoft Dataverse. Backend access to Dataverse is secured using OAuth and Microsoft Entra ID.
-
-## Project Status
-
-The project is currently in its initial setup and planning phase.
-
-## Project
-
-Semester project: Vehicle rental system
-
-Project name: **GO**
-
-Company: **Golders.ch**
+- [`PROJECT_PLAN.md`](docs/PROJECT_PLAN.md) — scope, status, and next steps
+- [`DECISIONS.md`](docs/DECISIONS.md) — architectural decisions and changes
+- [`LEARNING_LOG.md`](docs/LEARNING_LOG.md) — learning notes
+- PlantUML diagrams — domain model, repositories, and backend overview

@@ -1,5 +1,16 @@
 # Lernjournal
 
+## 2026-11-23 – Projektumfang und Datenbankwahl
+
+- Die geplante Azure- und Dataverse-Anbindung würde den Projektaufwand zu stark
+  erhöhen.
+- Eine bewusste Begrenzung des Umfangs ist eine wichtige Projektentscheidung:
+  Die Anwendung wird lokal entwickelt und soll H2 verwenden, statt Azure und
+  Dataverse anzubinden.
+- Entra ID wird vorerst nicht integriert. Das Mitarbeiter-Modell behält
+  `entraId` und `role`, damit eine Anmeldung später ergänzt werden kann;
+  aktuell gibt es keine Entra-Authentifizierung.
+
 ## 2026-11-23 – Spring-Verdrahtung und Tests
 
 - `@Repository` und `@Service` markieren Klassen, die Spring beim
@@ -92,8 +103,8 @@
 - Methoden sind implizit `public`; der Sichtbarkeitsmodifizierer kann
   weggelassen werden.
 - Die Geschäftslogik hängt nur von der Schnittstelle ab, nicht von der
-  konkreten Umsetzung (Dependency Inversion). Dadurch kann später eine
-  Dataverse-Implementierung eingesetzt werden.
+  konkreten Umsetzung (Dependency Inversion). Das ermöglicht unterschiedliche
+  technische Implementierungen; aktuell ist lokale Persistenz mit H2 geplant.
 
 **Fallstrick beim Standardpaket:**
 
@@ -121,8 +132,8 @@
 
 **Vorteile:**
 
-- Später kann eine zweite Umsetzung ergänzt werden, zum Beispiel
-  `DataverseVehicleRepository implements VehicleRepository`.
+- Eine andere Umsetzung kann ergänzt werden, ohne die Geschäftslogik an eine
+  konkrete Datenhaltung zu koppeln.
 - Der Service kennt nur die Schnittstelle. Beim Wechsel der Umsetzung sind
   daher **keine Änderungen** am Service nötig.
 - Abhängigkeiten zeigen nach innen in Richtung `domain` (Dependency Inversion).
@@ -177,8 +188,9 @@
   Zugriffe um. Je nach Zuständigkeit können Fachregeln auch im Modell liegen.
 - Ein Service implementiert das Repository nicht selbst. Er erhält ein
   Repository-Objekt über seinen Konstruktor und verwendet es über den
-  Schnittstellentyp. Die Verdrahtung muss noch erfolgen; eine Schnittstelle
-  erzeugt kein Objekt.
+  Schnittstellentyp. Eine Schnittstelle erzeugt kein Objekt; Spring übernimmt
+  inzwischen die Verdrahtung für den Reservierungsservice und das
+  In-Memory-Reservierungsrepository.
 - Jede In-Memory-Repository-Instanz besitzt eine eigene Map. Beim Neustart der
   Anwendung gehen die darin gespeicherten Daten verloren.
 - Zwei gültige Zeiträume überschneiden sich, wenn jeder vor dem Ende des
@@ -197,11 +209,18 @@
 
 ### Nächste Lernziele
 
-- Den Reservierungsservice und das Repository in Spring verdrahten.
+- (Zum Stand vom 2026-11-21) Den Reservierungsservice und das Repository in
+  Spring verdrahten.
 - Das Verhalten bei abgeschlossenen Reservierungen festlegen.
 - Gültige Zeiträume und relevante Reservierungsstatus fachlich testen.
 - Weitere Unit-Tests mit JUnit schreiben.
 - Statuswechsel mit Validierung umsetzen.
+
+**Fortschritt (2026-11-23):** Die Spring-Verdrahtung wurde ergänzt und mit
+einem Spring-Kontexttest geprüft. Mehrere Tests decken inzwischen
+Überschneidungen, direkt anschliessende Zeiträume, stornierte Reservierungen
+und verschiedene Fahrzeuge ab. Das Verhalten abgeschlossener Reservierungen
+und Statuswechsel sind weiterhin offen.
 
 ## 2026-11-22 – Erster Test für den Reservierungsservice
 
@@ -230,6 +249,7 @@
 - Eine teilweise Überschneidung desselben Fahrzeugs wird in beiden
   zeitlichen Richtungen abgelehnt. Verschiedene Fahrzeuge können dagegen
   zur gleichen Zeit reserviert werden.
-- Weitere Fälle für Zeiträume und Reservierungsstatus sind noch offen.
+- Weitere Fälle für Zeiträume und Reservierungsstatus sind noch offen; siehe
+  den aktuellen Stand im Projektplan.
 
 Beispiele: [ReservationServiceTest](../backend/src/test/java/ch/golders/backend/application/ReservationServiceTest.java).

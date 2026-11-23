@@ -6,16 +6,22 @@ Firmeninternes Fahrzeugvermietungssystem für Golders.ch. Mitarbeitende können
 Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 
 - Semesterprojekt
-- Architektur: Power Apps Code App → Spring-Boot-API → Microsoft Dataverse
+- Zielarchitektur: lokal ausgeführte Power Apps Code App → Spring-Boot-API →
+  H2-Datenbank
 - Die gesamte Geschäftslogik liegt im Spring-Boot-Backend
+- Ursprünglich geplant: Power Apps Code App, Spring-Boot-API, Dataverse,
+  Azure Container Apps und Microsoft Entra ID
+- Wegen des zu grossen Zeitaufwands auf lokale Ausführung und H2 reduziert;
+  Azure-Bereitstellung, Dataverse und Entra-ID-Integration sind nicht Teil des
+  aktuellen Projektumfangs
 
 ## Aktueller Stand (2026-11-23)
 
 - ✅ Projektstruktur initialisiert (Frontend, Backend, Dokumentation)
 - ✅ Fachmodell definiert: `Vehicle`, `Employee`, `Reservation`
   (siehe `architecture.puml`)
-- ✅ Frontend-Vorlage eingerichtet (React 19, Vite, Tailwind, shadcn/ui,
-  Router, React Query)
+- ✅ Power-Apps-Code-App-Vorlage eingerichtet (React 19, Vite, Tailwind,
+  shadcn/ui, Router, React Query); lokale Ausführung ist vorgesehen
 - ✅ Backend-Grundgerüst eingerichtet (Spring Boot, Java 21, Maven)
 - ✅ **Domänenmodell implementiert**:
   - Klassen: `Vehicle`, `Employee`, `Reservation`
@@ -23,7 +29,8 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
   - Paketstruktur: `ch.golders.backend.domain`
   - Unveränderliche Felder mit `final` (ausser Status)
 - ✅ **Mitarbeiterklasse verschlankt** (nur `entraId` und `role`;
-  Personendaten verbleiben in Entra ID)
+  vorbereitet für eine mögliche spätere Entra-ID-Anbindung; aktuell gibt es
+  keine Entra-Authentifizierung oder -Integration)
 - ✅ Repository-Schnittstellen entworfen (siehe `repositories.puml`)
 - ✅ Repository-Schnittstellen in Java umgesetzt (`domain`)
 - ✅ In-Memory-Implementierungen der Repositories hinzugefügt (`infrastructure`)
@@ -49,7 +56,7 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 - ⬜ Fahrzeugstatus bei Reservierungen berücksichtigen
 - ⬜ Stornierung, Übernahme, Rückgabe und erlaubte Statuswechsel umsetzen
 - ⬜ REST-API
-- ⬜ Anbindung an Dataverse
+- ⬜ H2-Datenbank lokal einrichten und an die Repositories anbinden
 - ⬜ Das Frontend zeigt noch Demo-Inhalte
 
 ## Nächste Schritte
@@ -61,10 +68,9 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
      berücksichtigt werden
    - Fahrzeugstatus prüfen
    - Stornierung, Übernahme, Rückgabe und zulässige Statuswechsel umsetzen
-2. **Backend: REST-API** und Swagger/OpenAPI
-3. **Dataverse-Anbindung** (Datenhaltung, OAuth über Entra ID)
+2. **Backend: H2-Datenbank** lokal einrichten und Repositories daran anbinden
+3. **Backend: REST-API** und Swagger/OpenAPI
 4. **Frontend: Fachliche Ansichten** (Fahrzeugliste, Reservierung usw.)
-5. **Bereitstellung** auf Azure Container Apps
 
 ## Mögliche Erweiterungen (Aufgabenliste)
 
@@ -79,7 +85,6 @@ Firmenfahrzeuge finden, reservieren, übernehmen und zurückgeben.
 | Backend: Domänenmodell                   | ✅ abgeschlossen           |
 | Backend: Reservierungsservice            | 🔄 teilweise umgesetzt     |
 | Backend: Geschäftslogik mit Tests        | ⬜ offen                   |
+| Backend: lokale Datenhaltung mit H2      | ⬜ offen                   |
 | Backend: REST-API                        | ⬜ offen                   |
-| Dataverse-Anbindung                      | ⬜ offen                   |
 | Frontend: Kernfunktionen                 | ⬜ offen                   |
-| Bereitstellung                           | ⬜ offen                   |

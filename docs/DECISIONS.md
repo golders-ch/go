@@ -1,5 +1,28 @@
 # Architektur-Entscheidungsprotokoll
 
+## 2026-11-23 – Lokal entwickeln und H2 statt Azure und Dataverse verwenden
+
+**Entscheidung:** Das Projekt wird lokal entwickelt und soll eine H2-Datenbank
+verwenden. Eine Azure-Bereitstellung und die Anbindung an Dataverse sind nicht
+Bestandteil des aktuellen Projektumfangs.
+
+**Kontext:** Der Aufwand für die ursprünglich geplante Azure- und Dataverse-
+Anbindung sowie die Entra-ID-Integration und Bereitstellung auf Azure
+Container Apps ist für das Projekt zu gross.
+
+**Ursprünglicher Plan:** Die Power Apps Code App sollte mit einer
+Spring-Boot-API verbunden werden. Das Backend sollte auf Azure Container Apps
+laufen, Daten sollten in Dataverse gespeichert und Identitäten über Microsoft
+Entra ID verwaltet werden.
+
+**Reduzierter Umfang:** Die Power Apps Code App und das Spring-Boot-Backend
+werden lokal ausgeführt. H2 ist als lokale Datenbank vorgesehen; Azure,
+Dataverse und Entra ID werden vorerst nicht integriert.
+
+**Begründung:** Der lokale Entwicklungsbetrieb mit H2 reduziert den
+Integrations- und Bereitstellungsaufwand und hält den Projektumfang
+beherrschbar.
+
 ## 2026-11-12 – Vorläufige Reservierungen blockieren Zeiträume
 
 **Entscheidung:** Vorläufige Reservierungen blockieren den Zeitraum eines
@@ -59,17 +82,39 @@ Regel zu duplizieren.
 (Vorname, Nachname, Geburtsdatum, Abteilung usw.) werden im Backend nicht
 gespeichert.
 
-**Kontext:** Identitäts- und Personendaten werden bereits in Microsoft Entra ID
-gepflegt. Eine Duplikation im Backend müsste synchronisiert werden und würde
-personenbezogene Daten unnötig an einem weiteren Ort speichern.
+**Kontext:** In der damaligen Planung sollten Identitäts- und Personendaten in
+Microsoft Entra ID gepflegt werden. Eine Duplikation im Backend müsste
+synchronisiert werden und würde personenbezogene Daten unnötig an einem
+weiteren Ort speichern.
 
 **Alternativen:** Ein vollständiges Mitarbeiterprofil im Backend (mit
 Synchronisierungsaufwand) oder ein Teilprofil (nur Anzeigename); beides wurde
 verworfen.
 
-**Begründung:** Entra ID bleibt die einzige Quelle der Wahrheit. Das entspricht
-der Datenminimierung und verringert den Codeumfang. Das Backend benötigt die
-Entra-ID zur Authentifizierung und die Rolle zur Autorisierung – mehr nicht.
+**Begründung:** In der damaligen Planung sollte Entra ID die Quelle der
+Identitäts- und Personendaten sein. Das entspricht der Datenminimierung und
+vermeidet eine Duplikation personenbezogener Daten im Backend.
+
+**Aktueller Stand (2026-11-23):** Eine Entra-ID-Anbindung und Authentifizierung
+werden vorerst nicht umgesetzt. Das schlanke Mitarbeiter-Modell mit `entraId`
+und `role` bleibt als Vorbereitung für eine mögliche spätere Integration
+bestehen; Personendaten werden lokal nicht dupliziert.
+
+## 2026-11-23 – Entra ID vorerst nicht integrieren
+
+**Entscheidung:** Die lokale Anwendung wird zunächst ohne Microsoft Entra ID
+entwickelt. Eine andere Form der Anmeldung ist nicht Teil dieser Entscheidung.
+
+**Kontext:** Der aktuelle Projektumfang soll lokale Entwicklung und eine
+überschaubare Datenhaltung mit H2 ermöglichen, ohne zusätzliche Entra-ID-
+Integration.
+
+**Alternative:** Entra ID bereits jetzt für Anmeldung und Autorisierung
+einbinden.
+
+**Begründung:** Die Integration würde den Umfang erweitern. Das bestehende
+Mitarbeiter-Modell mit `entraId` und `role` bleibt erhalten, damit eine
+Integration später ergänzt werden kann.
 
 ## 2026-10-31 – Schlanke Paketstruktur nach Clean Architecture
 
@@ -89,6 +134,10 @@ Domain-Paket.
 späteren Wechsel zu Dataverse wird nur `infrastructure` ersetzt;
 Geschäftslogik und API bleiben unverändert. Gleichzeitig bleibt die Struktur
 für ein Semesterprojekt überschaubar.
+
+**Aktueller Stand (2026-11-23):** Die damalige Planung einer späteren
+Dataverse-Anbindung ist durch die Entscheidung für lokale Entwicklung mit H2
+überholt. Die Paketstruktur bleibt davon unberührt.
 
 ## 2026-10-31 – Reservierungsstatus ACTIVE und COMPLETED ergänzen
 

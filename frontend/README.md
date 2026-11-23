@@ -2,6 +2,11 @@
 
 An opinionated **Vite + TypeScript + React** starter template for building Power Apps code apps.
 
+This repository currently uses the template as a starting point for the GO
+Power Apps Code App, which is intended to run locally. Publishing to a Power
+Platform environment and Azure deployment are outside the current scope; see
+the root [README](../README.md) for the project's current direction.
+
 Designed for common app scenarios, easy extensibility, and minimal setup.
 
 ---
